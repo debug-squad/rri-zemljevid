@@ -17,37 +17,40 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import si.feri.slidegame.MyGdxGame;
 import si.feri.slidegame.assets.AssetDescriptors;
+import si.feri.slidegame.common.Database;
 import si.feri.slidegame.config.GameConfig;
 import si.feri.slidegame.utils.Geolocation;
 import si.feri.slidegame.utils.Map;
 import si.feri.slidegame.utils.PixelPosition;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 public class MapScreen extends ScreenAdapter {
 
-    private final MyGdxGame game;
-    private final AssetManager assetManager;
+    public final MyGdxGame game;
+    public final AssetManager assetManager;
 
-    private Viewport viewport;
-    private Viewport hudViewport;
+    public Viewport viewport;
+    public Viewport hudViewport;
 
-    private Stage stage;
-    private Stage hudStage;
-    private MapGestureListener mapGestureListener;
+    public Stage stage;
+    public Stage hudStage;
+    public MapGestureListener mapGestureListener;
 
     //
     //
     //
 
-    private ShapeRenderer shapeRenderer;
-    private Vector3 touchPosition;
-    private static final Geolocation[] MARKER_GEOLOCATION = new Geolocation[] {
-            new Geolocation(46.559070, 15.638100),
-            new Geolocation(46.558152083016765, 15.641398429870605),
-            new Geolocation(46.55108413020504, 15.649874210357666),
-            new Geolocation(46.55096607724853, 15.631613731384277),
-            new Geolocation(46.559070, 15.638100),
-    };
-    private Map map;
+    public ShapeRenderer shapeRenderer;
+    public Vector3 touchPosition;
+
+    public static final float REFRESH_INTERVAL = 10f;
+
+    public float refreshTime;
+
+    public ArrayList<Geolocation> locations;
+    public Map map;
 
     //
     //
@@ -80,6 +83,12 @@ public class MapScreen extends ScreenAdapter {
         //
         //
 
+        refreshTime = 0;
+
+        //
+        //
+        //
+
         map = new Map();
         stage.addActor(map);
 
@@ -99,7 +108,7 @@ public class MapScreen extends ScreenAdapter {
         shapeRenderer = new ShapeRenderer();
         touchPosition = new Vector3();
 
-        mapGestureListener = new MapGestureListener((OrthographicCamera) stage.getCamera(), touchPosition);
+        mapGestureListener = new MapGestureListener((OrthographicCamera) stage.getCamera(), touchPosition, this);
         Gdx.input.setInputProcessor(new InputMultiplexer(
                 new GestureDetector(mapGestureListener),
                 stage,
@@ -117,6 +126,21 @@ public class MapScreen extends ScreenAdapter {
     public void render(float delta) {
         ScreenUtils.clear(Color.GRAY);
 
+        refreshTime -= delta;
+        if(refreshTime <= 0) {
+            refreshTime = REFRESH_INTERVAL;
+            locations = new ArrayList<>();
+            locations.add(new Geolocation(0, 0));
+            try {
+                for(Database.Event event: Database.fetchEvents().values()) {
+                    Geolocation geo = event.getLocation();
+                    locations.add(geo);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         mapGestureListener.handleInput(delta);
         stage.act(delta);
         hudStage.act(delta);
@@ -127,7 +151,7 @@ public class MapScreen extends ScreenAdapter {
                 0f
         ));
         pos.setText(geo + "");
-        MARKER_GEOLOCATION[4] = geo;
+        locations.set(0, geo);
 
         stage.draw();
         hudStage.draw();
@@ -152,7 +176,7 @@ public class MapScreen extends ScreenAdapter {
     //
     //
     private void drawMarkers() {
-        for(Geolocation geo: MARKER_GEOLOCATION) {
+        for(Geolocation geo: locations) {
             PixelPosition marker = map.getPixelPosition(geo);
 
             // Draw

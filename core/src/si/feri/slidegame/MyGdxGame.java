@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Logger;
+import si.feri.slidegame.common.Database;
 import si.feri.slidegame.screen.IntroScreen;
 
 public class MyGdxGame extends Game {
