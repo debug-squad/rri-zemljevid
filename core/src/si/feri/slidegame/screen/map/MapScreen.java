@@ -18,7 +18,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import si.feri.slidegame.MyGdxGame;
 import si.feri.slidegame.assets.AssetDescriptors;
 import si.feri.slidegame.config.GameConfig;
-import si.feri.slidegame.utils.*;
+import si.feri.slidegame.utils.Geolocation;
+import si.feri.slidegame.utils.Map;
+import si.feri.slidegame.utils.PixelPosition;
 
 public class MapScreen extends ScreenAdapter {
 
@@ -42,7 +44,8 @@ public class MapScreen extends ScreenAdapter {
             new Geolocation(46.559070, 15.638100),
             new Geolocation(46.558152083016765, 15.641398429870605),
             new Geolocation(46.55108413020504, 15.649874210357666),
-            new Geolocation(46.55096607724853, 15.631613731384277)
+            new Geolocation(46.55096607724853, 15.631613731384277),
+            new Geolocation(46.559070, 15.638100),
     };
     private Map map;
 
@@ -118,11 +121,13 @@ public class MapScreen extends ScreenAdapter {
         stage.act(delta);
         hudStage.act(delta);
 
-        pos.setText(map.getGeolocation(new Vector3(
+        Geolocation geo = map.getGeolocation(new Vector3(
                 (float) Gdx.input.getX(),
                 (float) Gdx.input.getY(),
                 0f
-        )) + "");
+        ));
+        pos.setText(geo + "");
+        MARKER_GEOLOCATION[4] = geo;
 
         stage.draw();
         hudStage.draw();

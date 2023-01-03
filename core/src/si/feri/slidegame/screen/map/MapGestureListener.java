@@ -108,11 +108,12 @@ public class MapGestureListener implements GestureDetector.GestureListener {
             camera.translate(0, 3, 0);
         }
 
+        // camera.zoom = MathUtils.clamp(camera.zoom, 0.5f, 1f);
+
         float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
         float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
 
-        camera.zoom = MathUtils.clamp(camera.zoom, 0.5f, 2f);
-        camera.position.x = MathUtils.clamp(camera.position.x, effectiveViewportWidth / 2f, GameConfig.MAP_WIDTH - effectiveViewportWidth / 2f);
-        camera.position.y = MathUtils.clamp(camera.position.y, effectiveViewportHeight / 2f, GameConfig.MAP_HEIGHT - effectiveViewportHeight / 2f);
+        // camera.position.x = MathUtils.clamp(camera.position.x, effectiveViewportWidth / 2f, GameConfig.MAP_WIDTH - effectiveViewportWidth / 2f);
+        // camera.position.y = MathUtils.clamp(camera.position.y, effectiveViewportHeight / 2f, GameConfig.MAP_HEIGHT - effectiveViewportHeight / 2f);
     }
 }
