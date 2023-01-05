@@ -3,6 +3,7 @@ package si.feri.slidegame.screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -17,6 +18,7 @@ public class IntroScreen extends ScreenAdapter {
     private final AssetManager assetManager;
 
     private Viewport viewport;
+    private TextureAtlas gameplayAtlas;
 
     private Stage stage;
 

@@ -47,6 +47,7 @@ project(":desktop") {
     dependencies {
         implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
@@ -73,6 +74,10 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        api "de.tomgrill.gdxfirebase:gdx-firebase-core:0.0.4-SNAPSHOT"
+        api "de.tomgrill.gdxfirebase:gdx-firebase-android:0.0.4-SNAPSHOT"
+        api "de.tomgrill.gdxfirebase:gdx-firebase-desktop:0.0.4-SNAPSHOT"
+        api 'org.mongodb:mongodb-driver-sync:4.0.5'
     }
 }*/
 
@@ -85,7 +90,8 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         implementation 'com.google.code.gson:gson:2.10'
-
+        implementation "pl.mk5.gdx-fireapp:gdx-fireapp-core:3.3.1"
+        api 'org.mongodb:mongodb-driver-sync:4.0.5'
         implementation 'com.google.firebase:firebase-database:20.1.0'
     }
 }

@@ -6,12 +6,21 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -19,12 +28,14 @@ import si.feri.slidegame.MyGdxGame;
 import si.feri.slidegame.assets.AssetDescriptors;
 import si.feri.slidegame.common.Database;
 import si.feri.slidegame.config.GameConfig;
+import si.feri.slidegame.screen.IntroScreen;
 import si.feri.slidegame.utils.Geolocation;
 import si.feri.slidegame.utils.Map;
 import si.feri.slidegame.utils.PixelPosition;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class MapScreen extends ScreenAdapter {
 
@@ -36,8 +47,9 @@ public class MapScreen extends ScreenAdapter {
 
     public Stage stage;
     public Stage hudStage;
-    public MapGestureListener mapGestureListener;
 
+    public MapGestureListener mapGestureListener;
+    public Boolean deploy;
     //
     //
     //
@@ -56,7 +68,7 @@ public class MapScreen extends ScreenAdapter {
     //
     //
 
-    Skin uskin;
+    private Skin uskin;
     Label pos;
 
     //
@@ -92,14 +104,12 @@ public class MapScreen extends ScreenAdapter {
         map = new Map();
         stage.addActor(map);
 
-
         uskin = assetManager.get(AssetDescriptors.UI_SKIN);
         pos = new Label("A, B, C", uskin);
         pos.setWidth(GameConfig.HUD_WIDTH - 10f);
         pos.setHeight(pos.getHeight() * 2f);
         pos.setPosition(5, 5);
         hudStage.addActor(pos);
-
 
         //
         //
@@ -108,12 +118,29 @@ public class MapScreen extends ScreenAdapter {
         shapeRenderer = new ShapeRenderer();
         touchPosition = new Vector3();
 
+        deploy = true;
         mapGestureListener = new MapGestureListener((OrthographicCamera) stage.getCamera(), touchPosition, this);
         Gdx.input.setInputProcessor(new InputMultiplexer(
                 new GestureDetector(mapGestureListener),
                 stage,
                 hudStage
         ));
+
+        if(refreshTime <= 0) {
+            refreshTime = REFRESH_INTERVAL;
+            locations = new ArrayList<>();
+            locations.add(new Geolocation(0, 0,"","","","","","",""));
+            try {
+                for(Database.Event event: Database.fetchEvents().values()) {
+                    Geolocation geo = event.getLocation();
+                    locations.add(geo);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        drawButtons();
+
     }
 
     @Override
@@ -130,7 +157,7 @@ public class MapScreen extends ScreenAdapter {
         if(refreshTime <= 0) {
             refreshTime = REFRESH_INTERVAL;
             locations = new ArrayList<>();
-            locations.add(new Geolocation(0, 0));
+            locations.add(new Geolocation(0, 0, "","","","","","",""));
             try {
                 for(Database.Event event: Database.fetchEvents().values()) {
                     Geolocation geo = event.getLocation();
@@ -139,9 +166,11 @@ public class MapScreen extends ScreenAdapter {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
         }
 
         mapGestureListener.handleInput(delta);
+
         stage.act(delta);
         hudStage.act(delta);
 
@@ -157,6 +186,7 @@ public class MapScreen extends ScreenAdapter {
         hudStage.draw();
 
         drawMarkers();
+        //drawButtons();
     }
 
 
@@ -184,7 +214,68 @@ public class MapScreen extends ScreenAdapter {
             shapeRenderer.setColor(Color.RED);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.circle(marker.x, marker.y, 10);
+
             shapeRenderer.end();
         }
+    }
+
+    private void drawButtons() {
+        for(final Geolocation geo: locations) {
+            final PixelPosition marker = map.getPixelPosition(geo);
+            TextButton button = new TextButton("F", uskin);
+            button.setTransform(true);
+            button.setScale(0.2f);
+            button.setPosition(marker.x,marker.y);
+            button.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    showMenu(geo);
+                }
+            });
+            stage.addActor(button);
+
+        }
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    public void showMenu(Geolocation geo){
+        Table table = new Table();
+        //table.defaults().pad(20);
+
+        TextField name = new TextField(geo.name, uskin);
+        TextField description = new TextField(geo.description, uskin);
+        TextField eventcreator = new TextField(geo.eventcreator, uskin);
+        TextField latitude = new TextField(geo.latitude, uskin);
+        TextField longitude = new TextField(geo.longitude, uskin);
+        TextField date = new TextField(geo.date, uskin);
+        TextField time = new TextField(geo.time, uskin);
+
+        TextButton buttonEdit = new TextButton("Edit", uskin);
+        buttonEdit.setTransform(true);
+        buttonEdit.setScale(0.3f);
+        buttonEdit.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+
+            }
+        });
+
+
+        //Gdx.input.setInputProcessor(hudStage);
+
+        table.add(name).row();
+        table.add(description).row();
+        table.add(eventcreator).row();
+        table.add(latitude).row();
+        table.add(longitude).row();
+        table.add(date).row();
+        table.add(time).row();
+        //table.add(buttonEdit).center().padLeft(300);
+
+        table.top().right();
+        table.setFillParent(true);
+        table.pack();
+
+        hudStage.addActor(table);
     }
 }

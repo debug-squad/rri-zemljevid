@@ -128,7 +128,8 @@ public class Database {
         public Geolocation getLocation() {
             return new Geolocation(
                     Double.parseDouble(latitude),
-                    Double.parseDouble(longitude)
+                    Double.parseDouble(longitude),
+                    name,description,eventCreator,latitude,longitude,date,time
             );
         }
     }

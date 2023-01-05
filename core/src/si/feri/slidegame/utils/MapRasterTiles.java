@@ -197,7 +197,8 @@ public class MapRasterTiles {
     public static Geolocation getGeolocation(int px, int py, int tileSize, int zoom, int beginTileX, int beginTileY, int height) {
         return new Geolocation(
                 tile2lat((double)beginTileY + (double)py/(double)tileSize, zoom),
-                tile2long((double)beginTileX + (double)px/(double)tileSize, zoom)
+                tile2long((double)beginTileX + (double)px/(double)tileSize, zoom),
+                "","","","","","",""
         );
     }
 }

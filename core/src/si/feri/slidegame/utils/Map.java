@@ -18,7 +18,7 @@ import si.feri.slidegame.config.GameConfig;
 import java.io.IOException;
 
 public class Map extends Actor {
-    private final Geolocation CENTER_GEOLOCATION = new Geolocation(46.557314, 15.637771);
+    private final Geolocation CENTER_GEOLOCATION = new Geolocation(46.557314, 15.637771, "","","","","","","");
 
     //
     //

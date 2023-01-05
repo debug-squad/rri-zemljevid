@@ -19,10 +19,10 @@ public class AssetPacker {
                 "gameplay"   // the name of the pack file / atlas name
         );
 
-        /*TexturePacker.process(settings,
+        TexturePacker.process(settings,
                 RAW_ASSETS_PATH + "/skin",
                 ASSETS_PATH + "/ui",
                 "uiskin"
-        );*/
+        );
     }
 }
