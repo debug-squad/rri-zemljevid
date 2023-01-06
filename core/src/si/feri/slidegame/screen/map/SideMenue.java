@@ -1,11 +1,16 @@
 package si.feri.slidegame.screen.map;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import si.feri.slidegame.config.GameConfig;
 import si.feri.slidegame.utils.Geolocation;
 
@@ -57,21 +62,26 @@ public class SideMenue extends Table {
 
         //Gdx.input.setInputProcessor(hudStage);
 
-        add(name).row();
-        add(description).row();
-        add(eventcreator).row();
-        add(latitude).row();
-        add(longitude).row();
-        add(date).row();
-        add(time).row();
+        add(name).width(GameConfig.HUD_WIDTH/3).row();
+        add(description).fill().row();
+        add(eventcreator).fill().row();
+        add(latitude).fill().row();
+        add(longitude).fill().row();
+        add(date).fill().row();
+        add(time).fill().row();
         //table.add(buttonEdit).center().padLeft(300);
 
         top().right();
-        setWidth(GameConfig.WIDTH/3);
+        setWidth(GameConfig.HUD_WIDTH/3);
         pack();
-        setHeight(GameConfig.HEIGHT);
-        setDebug(true);
+        setHeight(GameConfig.HUD_HEIGHT);
         setX(GameConfig.HUD_WIDTH - getWidth());
+
+
+        Pixmap bgPixmap = new Pixmap(1,1, Pixmap.Format.RGB565);
+        bgPixmap.setColor(Color.RED); bgPixmap.fill();
+        TextureRegionDrawable textureRegionDrawableBg = new TextureRegionDrawable(new TextureRegion(new Texture(bgPixmap)));
+        setBackground(textureRegionDrawableBg);
 
         //
         setGeo(null);

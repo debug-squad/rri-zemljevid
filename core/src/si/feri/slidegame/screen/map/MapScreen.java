@@ -174,10 +174,7 @@ public class MapScreen extends ScreenAdapter {
                     //
                     TextureRegion markerTexture = gameplayAtlas.findRegion(RegionNames.MARKER);
                     Image marker = new Image(markerTexture);
-                    marker.setWidth(50);
-                    marker.setHeight(50);
-                    marker.setPosition(pos.x-marker.getWidth()/2,pos.y);
-                    marker.setBounds(marker.getX(), marker.getY(), marker.getWidth(), marker.getHeight());
+                    marker.setBounds(pos.x-50/2, pos.y, 50, 50);
                     marker.addListener(new ClickListener() {
                         @Override
                         public void clicked(InputEvent event, float x, float y) {
