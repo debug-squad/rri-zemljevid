@@ -15,7 +15,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -59,6 +61,7 @@ public class MapScreen extends ScreenAdapter {
     public ArrayList<Geolocation> locations;
     public Group markers;
 
+    public SideMenue sideMenue;
 
     public Map map;
 
@@ -125,14 +128,20 @@ public class MapScreen extends ScreenAdapter {
         deploy = true;
         mapGestureListener = new MapGestureListener((OrthographicCamera) stage.getCamera(), touchPosition, this);
         Gdx.input.setInputProcessor(new InputMultiplexer(
-                new GestureDetector(mapGestureListener),
                 stage,
+                new GestureDetector(mapGestureListener),
                 hudStage
         ));
 
         //
+        locations = new ArrayList<>();
         markers = new Group();
         stage.addActor(markers);
+
+
+        //
+        sideMenue = new SideMenue(uskin);
+        hudStage.addActor(sideMenue);
     }
 
     @Override
@@ -152,8 +161,7 @@ public class MapScreen extends ScreenAdapter {
         refreshTime -= delta;
         if(refreshTime <= 0) {
             refreshTime = REFRESH_INTERVAL;
-            locations = new ArrayList<>();
-            locations.add(new Geolocation(0, 0, "","","","","","",""));
+            locations.clear();
             try {
                 markers.clearChildren();
                 for(Database.Event event: Database.fetchEvents().values()) {
@@ -169,10 +177,12 @@ public class MapScreen extends ScreenAdapter {
                     marker.setWidth(50);
                     marker.setHeight(50);
                     marker.setPosition(pos.x-marker.getWidth()/2,pos.y);
+                    marker.setBounds(marker.getX(), marker.getY(), marker.getWidth(), marker.getHeight());
                     marker.addListener(new ClickListener() {
                         @Override
                         public void clicked(InputEvent event, float x, float y) {
-                            showMenu(geo);
+                            sideMenue.setGeo(geo);
+                            System.out.println("Show new marker data");
                         }
                     });
                     markers.addActor(marker);
@@ -214,50 +224,5 @@ public class MapScreen extends ScreenAdapter {
         shapeRenderer.dispose();
         stage.dispose();
         hudStage.dispose();
-    }
-
-    //
-    //
-    //
-
-    public void showMenu(Geolocation geo){
-        Table table = new Table();
-        //table.defaults().pad(20);
-
-        TextField name = new TextField(geo.name, uskin);
-        TextField description = new TextField(geo.description, uskin);
-        TextField eventcreator = new TextField(geo.eventcreator, uskin);
-        TextField latitude = new TextField(geo.latitude, uskin);
-        TextField longitude = new TextField(geo.longitude, uskin);
-        TextField date = new TextField(geo.date, uskin);
-        TextField time = new TextField(geo.time, uskin);
-
-        TextButton buttonEdit = new TextButton("Edit", uskin);
-        buttonEdit.setTransform(true);
-        buttonEdit.setScale(0.3f);
-        buttonEdit.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-
-            }
-        });
-
-
-        //Gdx.input.setInputProcessor(hudStage);
-
-        table.add(name).row();
-        table.add(description).row();
-        table.add(eventcreator).row();
-        table.add(latitude).row();
-        table.add(longitude).row();
-        table.add(date).row();
-        table.add(time).row();
-        //table.add(buttonEdit).center().padLeft(300);
-
-        table.top().right();
-        table.setFillParent(true);
-        table.pack();
-
-        hudStage.addActor(table);
     }
 }

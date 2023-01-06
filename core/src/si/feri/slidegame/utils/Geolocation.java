@@ -1,7 +1,5 @@
 package si.feri.slidegame.utils;
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-
 public class Geolocation {
     public double lat;
     public double lng;

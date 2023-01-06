@@ -40,6 +40,7 @@ public class MapGestureListener implements GestureDetector.GestureListener {
     @Override
     public boolean tap(float x, float y, int count, int button) {
         Geolocation geo = mapScreen.map.getGeolocation(new Vector3(x, y, 0));
+        if(true) return false;
         Database.Event event = new Database.Event(geo);
         try {
             Database.addEvent(event);
