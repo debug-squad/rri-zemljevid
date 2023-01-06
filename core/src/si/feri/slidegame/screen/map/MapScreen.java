@@ -6,23 +6,17 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -31,15 +25,12 @@ import si.feri.slidegame.assets.AssetDescriptors;
 import si.feri.slidegame.assets.RegionNames;
 import si.feri.slidegame.common.Database;
 import si.feri.slidegame.config.GameConfig;
-import si.feri.slidegame.screen.IntroScreen;
-import si.feri.slidegame.screen.images.Marker;
 import si.feri.slidegame.utils.Geolocation;
 import si.feri.slidegame.utils.Map;
 import si.feri.slidegame.utils.PixelPosition;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class MapScreen extends ScreenAdapter {
 
@@ -66,6 +57,9 @@ public class MapScreen extends ScreenAdapter {
     public float refreshTime;
 
     public ArrayList<Geolocation> locations;
+    public Group markers;
+
+
     public Map map;
 
     //
@@ -136,21 +130,9 @@ public class MapScreen extends ScreenAdapter {
                 hudStage
         ));
 
-        if(refreshTime <= 0) {
-            refreshTime = REFRESH_INTERVAL;
-            locations = new ArrayList<>();
-            locations.add(new Geolocation(0, 0,"","","","","","",""));
-            try {
-                for(Database.Event event: Database.fetchEvents().values()) {
-                    Geolocation geo = event.getLocation();
-                    locations.add(geo);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        drawButtons();
-
+        //
+        markers = new Group();
+        stage.addActor(markers);
     }
 
     @Override
@@ -163,21 +145,46 @@ public class MapScreen extends ScreenAdapter {
     public void render(float delta) {
         ScreenUtils.clear(Color.GRAY);
 
+        //
+        // Dynamic data
+        //
+
         refreshTime -= delta;
         if(refreshTime <= 0) {
             refreshTime = REFRESH_INTERVAL;
             locations = new ArrayList<>();
             locations.add(new Geolocation(0, 0, "","","","","","",""));
             try {
+                markers.clearChildren();
                 for(Database.Event event: Database.fetchEvents().values()) {
-                    Geolocation geo = event.getLocation();
+                    final Geolocation geo = event.getLocation();
+                    final PixelPosition pos = map.getPixelPosition(geo);
+
+                    // Add to cache
                     locations.add(geo);
+
+                    //
+                    TextureRegion markerTexture = gameplayAtlas.findRegion(RegionNames.MARKER);
+                    Image marker = new Image(markerTexture);
+                    marker.setWidth(50);
+                    marker.setHeight(50);
+                    marker.setPosition(pos.x-marker.getWidth()/2,pos.y);
+                    marker.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            showMenu(geo);
+                        }
+                    });
+                    markers.addActor(marker);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
         }
+
+        //
+        //
+        //
 
         mapGestureListener.handleInput(delta);
 
@@ -194,9 +201,6 @@ public class MapScreen extends ScreenAdapter {
 
         stage.draw();
         hudStage.draw();
-
-        //drawMarkers();
-        //drawButtons();
     }
 
 
@@ -215,44 +219,6 @@ public class MapScreen extends ScreenAdapter {
     //
     //
     //
-    private void drawMarkers() {
-        for(Geolocation geo: locations) {
-            PixelPosition marker = map.getPixelPosition(geo);
-
-
-            // Draw
-            shapeRenderer.setProjectionMatrix(stage.getCamera().combined);
-            shapeRenderer.setColor(Color.RED);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.circle(marker.x, marker.y, 10);
-
-            shapeRenderer.end();
-        }
-    }
-
-    private void drawButtons() {
-        for(final Geolocation geo: locations) {
-            final PixelPosition marker = map.getPixelPosition(geo);
-
-            TextureRegion marker1 = gameplayAtlas.findRegion(RegionNames.MARKER);
-
-            Marker loc = new Marker(marker1);
-            loc.setWidth(50);
-            loc.setHeight(50);
-            loc.setDrawable(marker1);
-            loc.setPosition(marker.x-loc.getWidth()/2,marker.y);
-            loc.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    showMenu(geo);
-                }
-            });
-
-            stage.addActor(loc);
-
-        }
-
-    }
 
     public void showMenu(Geolocation geo){
         Table table = new Table();

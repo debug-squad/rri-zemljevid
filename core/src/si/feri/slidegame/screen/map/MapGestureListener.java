@@ -4,14 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import si.feri.slidegame.common.Database;
 import si.feri.slidegame.config.GameConfig;
 import si.feri.slidegame.utils.Geolocation;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 
 public class MapGestureListener implements GestureDetector.GestureListener {
@@ -49,6 +47,7 @@ public class MapGestureListener implements GestureDetector.GestureListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        mapScreen.refreshTime = 0;
 
         System.out.println("Click");
         return false;
