@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
@@ -26,9 +28,11 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import si.feri.slidegame.MyGdxGame;
 import si.feri.slidegame.assets.AssetDescriptors;
+import si.feri.slidegame.assets.RegionNames;
 import si.feri.slidegame.common.Database;
 import si.feri.slidegame.config.GameConfig;
 import si.feri.slidegame.screen.IntroScreen;
+import si.feri.slidegame.screen.images.Marker;
 import si.feri.slidegame.utils.Geolocation;
 import si.feri.slidegame.utils.Map;
 import si.feri.slidegame.utils.PixelPosition;
@@ -68,7 +72,10 @@ public class MapScreen extends ScreenAdapter {
     //
     //
 
+    private SpriteBatch batch;
+
     private Skin uskin;
+    private TextureAtlas gameplayAtlas;
     Label pos;
 
     //
@@ -91,6 +98,8 @@ public class MapScreen extends ScreenAdapter {
         stage.setDebugAll(true);
         hudStage.setDebugAll(true);
 
+        batch = new SpriteBatch();
+
         //
         //
         //
@@ -105,6 +114,7 @@ public class MapScreen extends ScreenAdapter {
         stage.addActor(map);
 
         uskin = assetManager.get(AssetDescriptors.UI_SKIN);
+        gameplayAtlas = assetManager.get(AssetDescriptors.GAMEPLAY);
         pos = new Label("A, B, C", uskin);
         pos.setWidth(GameConfig.HUD_WIDTH - 10f);
         pos.setHeight(pos.getHeight() * 2f);
@@ -185,7 +195,7 @@ public class MapScreen extends ScreenAdapter {
         stage.draw();
         hudStage.draw();
 
-        drawMarkers();
+        //drawMarkers();
         //drawButtons();
     }
 
@@ -209,6 +219,7 @@ public class MapScreen extends ScreenAdapter {
         for(Geolocation geo: locations) {
             PixelPosition marker = map.getPixelPosition(geo);
 
+
             // Draw
             shapeRenderer.setProjectionMatrix(stage.getCamera().combined);
             shapeRenderer.setColor(Color.RED);
@@ -222,20 +233,25 @@ public class MapScreen extends ScreenAdapter {
     private void drawButtons() {
         for(final Geolocation geo: locations) {
             final PixelPosition marker = map.getPixelPosition(geo);
-            TextButton button = new TextButton("F", uskin);
-            button.setTransform(true);
-            button.setScale(0.2f);
-            button.setPosition(marker.x,marker.y);
-            button.addListener(new ClickListener() {
+
+            TextureRegion marker1 = gameplayAtlas.findRegion(RegionNames.MARKER);
+
+            Marker loc = new Marker(marker1);
+            loc.setWidth(50);
+            loc.setHeight(50);
+            loc.setDrawable(marker1);
+            loc.setPosition(marker.x-loc.getWidth()/2,marker.y);
+            loc.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     showMenu(geo);
                 }
             });
-            stage.addActor(button);
+
+            stage.addActor(loc);
 
         }
-        Gdx.input.setInputProcessor(stage);
+
     }
 
     public void showMenu(Geolocation geo){

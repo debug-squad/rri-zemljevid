@@ -34,7 +34,11 @@ public class IntroScreen extends ScreenAdapter {
 
         // load assets
         assetManager.load(AssetDescriptors.UI_SKIN);
+        assetManager.load(AssetDescriptors.GAMEPLAY);
+
         assetManager.finishLoading();   // blocks until all assets are loaded
+
+        gameplayAtlas = assetManager.get(AssetDescriptors.GAMEPLAY);
     }
 
     @Override
