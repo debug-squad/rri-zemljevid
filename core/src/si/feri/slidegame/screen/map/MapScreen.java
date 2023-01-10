@@ -8,31 +8,22 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import si.feri.slidegame.MyGdxGame;
 import si.feri.slidegame.assets.AssetDescriptors;
 import si.feri.slidegame.assets.RegionNames;
-import si.feri.slidegame.common.Database;
 import si.feri.slidegame.config.GameConfig;
 import si.feri.slidegame.utils.Geolocation;
 import si.feri.slidegame.utils.Map;
-import si.feri.slidegame.utils.PixelPosition;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class MapScreen extends ScreenAdapter {
 
@@ -54,16 +45,10 @@ public class MapScreen extends ScreenAdapter {
     public ShapeRenderer shapeRenderer;
     public Vector3 touchPosition;
 
-    public static final float REFRESH_INTERVAL = 10f;
-
-    public float refreshTime;
-
-    public ArrayList<Geolocation> locations;
-    public Group markers;
-
     public SideMenue sideMenue;
 
     public Map map;
+    public Markers markers;
 
     //
     //
@@ -101,12 +86,6 @@ public class MapScreen extends ScreenAdapter {
         //
         //
 
-        refreshTime = 0;
-
-        //
-        //
-        //
-
         map = new Map();
         stage.addActor(map);
 
@@ -134,14 +113,12 @@ public class MapScreen extends ScreenAdapter {
         ));
 
         //
-        locations = new ArrayList<>();
-        markers = new Group();
-        stage.addActor(markers);
-
+        sideMenue = new SideMenue(uskin, this);
+        hudStage.addActor(sideMenue);
 
         //
-        sideMenue = new SideMenue(uskin);
-        hudStage.addActor(sideMenue);
+        markers = new Markers(this, gameplayAtlas.findRegion(RegionNames.MARKER));
+        stage.addActor(markers);
     }
 
     @Override
@@ -155,41 +132,6 @@ public class MapScreen extends ScreenAdapter {
         ScreenUtils.clear(Color.GRAY);
 
         //
-        // Dynamic data
-        //
-
-        refreshTime -= delta;
-        if(refreshTime <= 0) {
-            refreshTime = REFRESH_INTERVAL;
-            locations.clear();
-            try {
-                markers.clearChildren();
-                for(Database.Event event: Database.fetchEvents().values()) {
-                    final Geolocation geo = event.getLocation();
-                    final PixelPosition pos = map.getPixelPosition(geo);
-
-                    // Add to cache
-                    locations.add(geo);
-
-                    //
-                    TextureRegion markerTexture = gameplayAtlas.findRegion(RegionNames.MARKER);
-                    Image marker = new Image(markerTexture);
-                    marker.setBounds(pos.x-50/2, pos.y, 50, 50);
-                    marker.addListener(new ClickListener() {
-                        @Override
-                        public void clicked(InputEvent event, float x, float y) {
-                            sideMenue.setGeo(geo);
-                            System.out.println("Show new marker data");
-                        }
-                    });
-                    markers.addActor(marker);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        //
         //
         //
 
@@ -198,15 +140,17 @@ public class MapScreen extends ScreenAdapter {
         stage.act(delta);
         hudStage.act(delta);
 
-        Geolocation geo = map.getGeolocation(new Vector3(
+        // Set debug position
+        Vector2 loc = new Vector2(
                 (float) Gdx.input.getX(),
-                (float) Gdx.input.getY(),
-                0f
-        ));
+                (float) Gdx.input.getY()
+        );
+        Geolocation geo = map.getGeolocation(loc);
         pos.setText(geo + "");
-        locations.set(0, geo);
 
+        stage.getViewport().apply();
         stage.draw();
+        hudStage.getViewport().apply();
         hudStage.draw();
     }
 

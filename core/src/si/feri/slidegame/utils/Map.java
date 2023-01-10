@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import si.feri.slidegame.config.GameConfig;
@@ -18,7 +19,7 @@ import si.feri.slidegame.config.GameConfig;
 import java.io.IOException;
 
 public class Map extends Actor {
-    private final Geolocation CENTER_GEOLOCATION = new Geolocation(46.557314, 15.637771, "","","","","","","");
+    private final Geolocation CENTER_GEOLOCATION = new Geolocation(46.557314, 15.637771);
 
     //
     //
@@ -125,8 +126,8 @@ public class Map extends Actor {
         );
     }
 
-    public Geolocation getGeolocation(Vector3 loc) {
-        Vector3 pos = getStage().getCamera().unproject(new Vector3(loc.x, loc.y, 0f));
+    public Geolocation getGeolocation(Vector2 loc) {
+        Vector2 pos = getStage().getViewport().unproject(loc);
         return MapRasterTiles.getGeolocation(
                 (int) pos.x,
                 GameConfig.MAP_HEIGHT - (int) pos.y,

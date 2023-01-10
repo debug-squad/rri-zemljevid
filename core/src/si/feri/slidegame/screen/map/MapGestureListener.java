@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import si.feri.slidegame.common.Database;
+import si.feri.slidegame.database.Database;
 import si.feri.slidegame.config.GameConfig;
+import si.feri.slidegame.database.EventFirebase;
 import si.feri.slidegame.utils.Geolocation;
 
 import java.io.IOException;
@@ -39,18 +40,13 @@ public class MapGestureListener implements GestureDetector.GestureListener {
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        Geolocation geo = mapScreen.map.getGeolocation(new Vector3(x, y, 0));
-        if(true) return false;
-        Database.Event event = new Database.Event(geo);
-        try {
-            Database.addEvent(event);
-            mapScreen.locations.add(geo);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        mapScreen.refreshTime = 0;
-
         System.out.println("Click");
+        Geolocation geo = mapScreen.map.getGeolocation(new Vector2(x, y));
+        if(mapScreen.sideMenue.capture) {
+            mapScreen.sideMenue.capture = false;
+            mapScreen.sideMenue.marker.setLocation(geo);
+            return false;
+        }
         return false;
     }
 
