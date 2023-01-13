@@ -25,7 +25,7 @@ public class SideMenue extends Table {
     //
     //
 
-    TextField name;
+    Label name;
     TextField description;
     TextField eventCreator;
     TextField latitude;
@@ -43,7 +43,8 @@ public class SideMenue extends Table {
         this.screen = screen;
         //table.defaults().pad(20);
 
-        name = new TextField("geo.name", uskin);
+        name = new Label("geo.name", uskin);
+        //name = new TextField("geo.name", uskin);
         description = new TextField("geo.description", uskin);
         eventCreator = new TextField("geo.eventcreator", uskin);
         latitude = new TextField("geo.latitude", uskin);
@@ -51,27 +52,17 @@ public class SideMenue extends Table {
         date = new TextField("geo.date", uskin);
         time = new TextField("geo.time", uskin);
 
-        TextButton buttonEdit = new TextButton("Edit", uskin);
-        buttonEdit.setTransform(true);
-        buttonEdit.setScale(0.3f);
-        buttonEdit.addListener(new ClickListener() {
+
+
+        TextButton exitBtn = new TextButton("Exit", uskin);
+        exitBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
+                setMarker(null);
             }
         });
 
-        TextButton setLocBtn = new TextButton("Set Location", uskin);
-        setLocBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                capture = true;
-            }
-        });
-
-        //Gdx.input.setInputProcessor(hudStage);
-
-        float width = GameConfig.HUD_WIDTH/10;
+        float width = GameConfig.HUD_WIDTH/2f;
 
         add(new Label("", uskin)).width(width).row();
         add(name).fill().row();
@@ -81,7 +72,7 @@ public class SideMenue extends Table {
         add(longitude).fill().row();
         add(date).fill().row();
         add(time).fill().row();
-        add(setLocBtn).fill().row();
+        add(exitBtn).fill().row();
         //table.add(buttonEdit).center().padLeft(300);
 
         top().right();

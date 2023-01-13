@@ -1,10 +1,17 @@
 package si.feri.slidegame.utils;
 
+
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import si.feri.slidegame.config.Keys;
-
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -21,11 +28,13 @@ public class MapRasterTiles {
     //https://www.geoapify.com/get-started-with-maps-api
     static String mapServiceUrl = "https://maps.geoapify.com/v1/tile/";
     static String token = "?&apiKey=" + Keys.GEOAPIFY;
-    static String tilesetId = "dark-matter-purple-roads";
+    static String tilesetId = "osm-bright";
     static String format = "@2x.png";
 
     //@2x in format means it returns higher DPI version of the image and the image size is 512px (otherwise it is 256px)
     final static public int TILE_SIZE = 512;
+
+
 
     /**
      * Get raster tile based on zoom and tile number.
@@ -60,8 +69,22 @@ public class MapRasterTiles {
      */
     public static Texture getRasterTile(String zoomXY) throws IOException {
         URL url = new URL(mapServiceUrl + tilesetId + "/" + zoomXY + format + token);
-        ByteArrayOutputStream bis = fetchTile(url);
-        return getTexture(bis.toByteArray());
+        Path filePath = Paths.get("maps/" + zoomXY + format);
+        try {
+            byte[] readBytes = Files.readAllBytes(filePath);
+            System.out.println("Cache!");
+            return getTexture(readBytes);
+        }catch (Exception e){
+
+            if(!Files.exists(filePath.getParent())){
+                Files.createDirectories(filePath.getParent());
+            }
+
+            byte[] data = fetchTile(url).toByteArray();
+            Files.write(filePath,data);
+
+            return getTexture(data);
+        }
     }
 
     /**

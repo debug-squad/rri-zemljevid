@@ -6,6 +6,8 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -13,9 +15,12 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import si.feri.slidegame.MyGdxGame;
@@ -71,14 +76,15 @@ public class MapScreen extends ScreenAdapter {
 
     @Override
     public void show() {
-        viewport = new FitViewport(GameConfig.MAP_WIDTH, GameConfig.MAP_HEIGHT);
-        hudViewport = new FitViewport(GameConfig.HUD_WIDTH, GameConfig.HUD_HEIGHT);
+
+        viewport = new FillViewport(GameConfig.MAP_WIDTH, GameConfig.MAP_HEIGHT);
+        hudViewport = new ExtendViewport(0, GameConfig.HUD_HEIGHT);
 
         stage = new Stage(viewport, game.getBatch());
         hudStage = new Stage(hudViewport, game.getBatch());
 
-        stage.setDebugAll(true);
-        hudStage.setDebugAll(true);
+        //stage.setDebugAll(true);
+        //hudStage.setDebugAll(true);
 
         batch = new SpriteBatch();
 
@@ -91,10 +97,16 @@ public class MapScreen extends ScreenAdapter {
 
         uskin = assetManager.get(AssetDescriptors.UI_SKIN);
         gameplayAtlas = assetManager.get(AssetDescriptors.GAMEPLAY);
+
+
         pos = new Label("A, B, C", uskin);
-        pos.setWidth(GameConfig.HUD_WIDTH - 10f);
+        pos.setWidth(GameConfig.HUD_WIDTH/3.2f);
         pos.setHeight(pos.getHeight() * 2f);
         pos.setPosition(5, 5);
+        Pixmap labelColor = new Pixmap(1, 1, Pixmap.Format.RGB888);
+        labelColor.setColor(Color.BLACK);
+        labelColor.fill();
+        pos.getStyle().background = new Image(new Texture(labelColor)).getDrawable();
         hudStage.addActor(pos);
 
         //
@@ -125,6 +137,14 @@ public class MapScreen extends ScreenAdapter {
     public void resize(int width, int height) {
         viewport.update(width, height, true);
         hudViewport.update(width, height, true);
+        sideMenue.setX(hudViewport.getWorldWidth()-sideMenue.getWidth());
+
+
+
+        System.out.println("Worldd height is "+hudViewport.getWorldHeight() +"Screen height is "+hudViewport.getScreenHeight() );
+        System.out.println("Worldd width is "+hudViewport.getWorldWidth() +"Screen width is "+hudViewport.getScreenWidth() );
+
+
     }
 
     @Override
