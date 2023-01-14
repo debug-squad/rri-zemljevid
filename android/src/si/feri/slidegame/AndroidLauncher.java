@@ -1,4 +1,4 @@
-package si.feri.slidegame;
+package si.feri.rrizemljevid;
 
 import android.os.Bundle;
 import com.badlogic.gdx.backends.android.AndroidApplication;

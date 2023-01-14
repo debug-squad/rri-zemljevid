@@ -1,22 +1,24 @@
 buildscript {
-
-
     repositories {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://plugins.gradle.org/m2/" }
         google()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.4'
-
-
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:1.8.0"
     }
 }
 
 allprojects {
     apply plugin: "eclipse"
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 
     version = '1.0'
     ext {
@@ -37,6 +39,7 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://jitpack.io" }
+        jcenter()
     }
 }
 
@@ -93,5 +96,6 @@ project(":core") {
         implementation "pl.mk5.gdx-fireapp:gdx-fireapp-core:3.3.1"
         api 'org.mongodb:mongodb-driver-sync:4.0.5'
         implementation 'com.google.firebase:firebase-database:20.1.0'
+        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2"
     }
 }

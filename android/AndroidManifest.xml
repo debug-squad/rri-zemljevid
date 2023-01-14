@@ -14,7 +14,7 @@
             android:label="@string/app_name"
             tools:ignore="UnusedAttribute">
         <activity
-                android:name="si.feri.slidegame.AndroidLauncher"
+                android:name="si.feri.rrizemljevid.AndroidLauncher"
                 android:label="@string/app_name"
                 android:screenOrientation="landscape"
                 android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
