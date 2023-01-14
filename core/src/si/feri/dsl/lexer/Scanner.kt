@@ -1,9 +1,12 @@
 package si.feri.dsl.lexer
 
+import java.io.BufferedInputStream
+import java.io.ByteArrayInputStream
 import java.io.FileInputStream
+import java.io.InputStream
 import java.util.*
 
-class Scanner(private val automaton: Automaton, private var stream: FileInputStream) {
+class Scanner(private val automaton: Automaton, private var inputStream: InputStream) {
     companion object {
         const val EOF_SYMBOL = -1
         const val ERROR_STATE = 0
@@ -11,11 +14,19 @@ class Scanner(private val automaton: Automaton, private var stream: FileInputStr
         const val NEWLINE = '\n'.code
     }
 
+    private val stream = object: BufferedInputStream(inputStream) {
+        fun position(): Long = this.pos.toLong()
+    }
+
     private var state = automaton.startState
     private var last: Int = stream.read()
     private var buffer = LinkedList<Byte>()
     private var row = 1
     private var column = 1
+
+
+
+
 
     private fun updatePosition(symbol: Int) {
         if (symbol == NEWLINE) {
@@ -52,7 +63,7 @@ class Scanner(private val automaton: Automaton, private var stream: FileInputStr
     fun getToken(): Token? {
         if (eof()) return null
 
-        val pos = stream.channel.position() - 1
+        val pos = stream.position() - 1
         val startRow = row
         val startColumn = column
         buffer.clear()
@@ -62,7 +73,7 @@ class Scanner(private val automaton: Automaton, private var stream: FileInputStr
         return if (value == SKIP_VALUE)
             getToken()
         else
-            Token(value, String(buffer.toByteArray()), startRow, startColumn, stream.channel.position(), pos)
+            Token(value, String(buffer.toByteArray()), startRow, startColumn, stream.position(), pos)
     }
 
     //
@@ -71,9 +82,9 @@ class Scanner(private val automaton: Automaton, private var stream: FileInputStr
 
     data class Position(val cursor: Long)
 
-    fun getPosition(): Long? = stream.channel.position()
+    fun getPosition(): Long? = stream.position()
     fun setPosition(position: Long): Token? {
-        stream.channel.position(position)
+        stream.position()
         last = stream.read()
         buffer.clear()
         return getToken()

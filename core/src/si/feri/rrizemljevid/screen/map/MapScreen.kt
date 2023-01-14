@@ -45,6 +45,7 @@ class MapScreen(val game: MyGdxGame) : ScreenAdapter() {
     var sideMenue: SideMenue? = null
     var map: Map? = null
     var markers: Markers? = null
+    var dsl: Dsl? = null
 
     //
     //
@@ -104,6 +105,9 @@ class MapScreen(val game: MyGdxGame) : ScreenAdapter() {
         //
         sideMenue = SideMenue(uskin, this)
         hudStage!!.addActor(sideMenue)
+
+        dsl = Dsl(ShapeRenderer(), map!!, SpriteBatch())
+        stage!!.addActor(dsl)
 
         //
         markers = Markers(this, gameplayAtlas!!.findRegion(RegionNames.MARKER))
