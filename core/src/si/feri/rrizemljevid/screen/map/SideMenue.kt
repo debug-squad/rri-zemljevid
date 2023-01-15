@@ -26,20 +26,20 @@ class SideMenue(
             }
             isVisible = true
             val event = EventFirebase(marker.event)
-            name.setText(event.name)
-            description.text = event.description
-            latitude.text = event.latitude
-            longitude.text = event.longitude
-            eventCreator.text = event.eventCreator
-            date.text = event.date
-            time.text = event.time
+            name.setText("Name: " + event.name)
+            description.text = "Description: " +event.description
+            latitude.text = "Latitude: " +event.latitude
+            longitude.text = "Longitude :" +event.longitude
+            eventCreator.text = "Event Creator: " + event.eventCreator
+            date.text = "Event date: " +event.date
+            time.text = "Event time: " +event.time
         }
     var capture = false
 
     //
     //
     //
-    var name: Label
+    var name: TextField
     var description: TextField
     var eventCreator: TextField
     var latitude: TextField
@@ -52,7 +52,7 @@ class SideMenue(
     //
     init {
         //table.defaults().pad(20);
-        name = Label("geo.name", uskin)
+        name = TextField("geo.name", uskin)
         //name = new TextField("geo.name", uskin);
         description = TextField("geo.description", uskin)
         eventCreator = TextField("geo.eventcreator", uskin)
@@ -60,22 +60,22 @@ class SideMenue(
         longitude = TextField("geo.longitude", uskin)
         date = TextField("geo.date", uskin)
         time = TextField("geo.time", uskin)
-        val exitBtn = TextButton("Exit", uskin)
+        val exitBtn = TextButton("Exit", uskin,"small")
         exitBtn.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 marker = null
             }
         })
+        exitBtn.setColor(Color.BLACK)
         val width = GameConfig.HUD_WIDTH / 2f
-        add(Label("", uskin)).width(width).row()
-        add(name).fill().row()
-        add(description).fill().row()
-        add(eventCreator).fill().row()
-        add(latitude).fill().row()
-        add(longitude).fill().row()
-        add(date).fill().row()
-        add(time).fill().row()
-        add(exitBtn).fill().row()
+        add(name).fill().width(width).padTop(20f).padBottom(20f).row()
+        add(description).fill().padBottom(20f).row()
+        add(eventCreator).fill().padBottom(20f).row()
+        add(latitude).fill().padBottom(20f).row()
+        add(longitude).fill().padBottom(20f).row()
+        add(date).fill().padBottom(20f).row()
+        add(time).fill().padBottom(20f).row()
+        add(exitBtn).row()
         //table.add(buttonEdit).center().padLeft(300);
         top().right()
         setWidth(width)
@@ -83,7 +83,7 @@ class SideMenue(
         height = GameConfig.HUD_HEIGHT
         x = GameConfig.HUD_WIDTH - getWidth()
         val bgPixmap = Pixmap(1, 1, Pixmap.Format.RGB565)
-        bgPixmap.setColor(Color.RED)
+        bgPixmap.setColor(Color.DARK_GRAY)
         bgPixmap.fill()
         val textureRegionDrawableBg = TextureRegionDrawable(TextureRegion(Texture(bgPixmap)))
         background = textureRegionDrawableBg

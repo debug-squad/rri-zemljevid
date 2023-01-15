@@ -67,12 +67,13 @@ class Dsl(val sr: ShapeRenderer, val map: Map, sb: SpriteBatch) : Actor() {
 
         sr.projectionMatrix = stage.camera.combined;
 
+        Gdx.gl.glLineWidth(5f);
         sr.color = Color.BLUE;
         for (poly in polySprites) {
             sr.polyline(poly.transformedVertices)
         }
 
-        sr.color = Color.BLUE;
+        sr.color = Color.BLACK;
         for (line in lines) {
             sr.polyline(line)
         }

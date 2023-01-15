@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.FillViewport
@@ -82,12 +83,17 @@ class MapScreen(val game: MyGdxGame) : ScreenAdapter() {
         pos = Label("A, B, C", uskin)
         pos!!.width = GameConfig.HUD_WIDTH / 3.2f
         pos!!.height = pos!!.height * 2f
-        pos!!.setPosition(5f, 5f)
+       //pos!!.setPosition(5f, 5f)
         val labelColor = Pixmap(1, 1, Pixmap.Format.RGB888)
         labelColor.setColor(Color.BLACK)
         labelColor.fill()
+
         pos!!.style.background = Image(Texture(labelColor)).drawable
-        hudStage!!.addActor(pos)
+        var table = Table()
+        table.add(pos)
+        table.setPosition(115f, 30f)
+
+        hudStage!!.addActor(table)
 
         //
         //

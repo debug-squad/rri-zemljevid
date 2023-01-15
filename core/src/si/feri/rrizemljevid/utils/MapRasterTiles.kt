@@ -20,7 +20,7 @@ object MapRasterTiles {
     //https://www.geoapify.com/get-started-with-maps-api
     var mapServiceUrl = "https://maps.geoapify.com/v1/tile/"
     var token = "?&apiKey=" + Keys.GEOAPIFY
-    var tilesetId = "osm-bright"
+    var tilesetId = "dark-matter-yellow-roads"
     var format = "@2x.png"
 
     //@2x in format means it returns higher DPI version of the image and the image size is 512px (otherwise it is 256px)
