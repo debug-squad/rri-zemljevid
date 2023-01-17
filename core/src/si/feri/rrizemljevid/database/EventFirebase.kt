@@ -76,10 +76,16 @@ class EventFirebase {
         } catch (e: Exception) {
             UUID.randomUUID()
         }
-        return Event(
-            UUID.fromString(id), name, description, parseLocation(), eventCreator, LocalDateTime.parse(
+        val time: LocalDateTime = try {
+            LocalDateTime.parse(
                 "$date $time", DATE_TIME_FORMATTER
-            ), invitedList
+            )
+        } catch (e: Exception) {
+            LocalDateTime.now()
+        }
+
+        return Event(
+            UUID.fromString(id), name, description, parseLocation(), eventCreator, time, invitedList
         )
     }
 
